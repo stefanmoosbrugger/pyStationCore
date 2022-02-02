@@ -25,6 +25,32 @@ class Measurement:
         self.ogr = None                    # reflected global radiation [W/m2]
         self.rh = None                     # relative humidity [%]
 
+    def measurement_as_dict(self):
+        d = {}
+        if self.hs:
+            d["hs"] = self.hs
+        if self.hs24h:
+            d["hs24h"] = self.hs24h
+        if self.ta:
+            d["ta"] = self.ta
+        if self.tss:
+            d["tss"] = self.tss
+        if self.td:
+            d["td"] = self.td
+        if self.vw:
+            d["vw"] = self.vw
+        if self.vwmax:
+            d["vwmax"] = self.vwmax
+        if self.dw:
+            d["dw"] = self.dw
+        if self.igr:
+            d["igr"] = self.igr
+        if self.ogr:
+            d["ogr"] = self.ogr
+        if self.rh:
+            d["rh"] = self.rh
+        return d
+
     def __str__(self):
         retStr = " -> measurement@" + str(self.timestamp) + "\n"
         if self.hs:
