@@ -8,4 +8,4 @@ class Database:
         if(db is DatabaseType.MySql):
             pass
         if(db is DatabaseType.MongoDb):
-            return MongoDb()
+            return MongoDbClient()

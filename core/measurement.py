@@ -27,6 +27,8 @@ class Measurement:
 
     def measurement_as_dict(self):
         d = {}
+        if self.timestamp:
+            d["timestamp"] = int(self.timestamp)
         if self.hs:
             d["hs"] = self.hs
         if self.hs24h:

@@ -22,8 +22,9 @@ class Station:
 
     def measurements_as_list(self):
         l = []
-        for d in data:
+        for d in self.data:
             l.append(d.measurement_as_dict())
+        return l
 
     def __str__(self):
         retStr = "~~~~ " + str(self.name) + "@["+str(self.lat)+"°N,"+str(self.long)+"°E,"+str(self.altitude)+"] (" + str(self.region) + ")~~~~\n"
