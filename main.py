@@ -6,23 +6,23 @@ from utils.database import *
 
 c = Connection.get_connection(ConnectionType.Default)
 d = Database.get_database(DatabaseType.MongoDb)
-d.open("51.68.5.233","27017","stationdb")
+d.open("51.68.5.233","27017","stationdb","dbuser","210589")
 
 # get all weather data for switzerland region
-proc_ch = Processor.get_processor(Region.Schweiz,c)
-stations_ch = proc_ch.get_stations()
-for station_ch in stations_ch:
-   proc_ch.get_data_for(station_ch)
-   print("write "+station_ch.name)
-   d.write_station_data(station_ch)
+#proc_ch = Processor.get_processor(Region.Schweiz,c)
+#stations_ch = proc_ch.get_stations()
+#for station_ch in stations_ch:
+#   proc_ch.get_data_for(station_ch)
+#   print("write "+station_ch.name)
+#   d.write_station_data(station_ch)
 
 # get all weather data for bavaria region
-proc_by = Processor.get_processor(Region.Bayern,c)
-stations_by = proc_by.get_stations()
-for station_by in stations_by:
-   proc_by.get_data_for(station_by)
-   print("write "+station_by.name)
-   d.write_station_data(station_by)
+#proc_by = Processor.get_processor(Region.Bayern,c)
+#stations_by = proc_by.get_stations()
+#for station_by in stations_by:
+#   proc_by.get_data_for(station_by)
+#   print("write "+station_by.name)
+#   d.write_station_data(station_by)
 
 # get all weather data for tirol region
 proc_ti = Processor.get_processor(Region.Tirol,c)

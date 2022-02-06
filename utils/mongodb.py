@@ -1,8 +1,11 @@
 import pymongo
 
 class MongoDbClient:
-    def open(self,host,port,db):
-        self.client = pymongo.MongoClient(str("mongodb://"+str(host)+":"+str(port)+"/"))
+    def open(self,host,port,db,user="",passwd=""):
+        if user!="" or passwd!="":
+            self.client = pymongo.MongoClient(str("mongodb://"+str(user)+":"+str(passwd)+"@"+str(host)+":"+str(port)+"/?authSource="+str(db)))
+        else:
+            self.client = pymongo.MongoClient(str("mongodb://"+str(host)+":"+str(port)+"/"))
         self.db = self.client[str(db)]
         self.stations = self.db["stations"]
         self.measurements = self.db["measurements"]
