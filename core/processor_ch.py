@@ -1,4 +1,5 @@
 import json
+from pyproj import Proj,transform
 from utils.connection import *
 from common.region import *
 from core.station import *
@@ -36,8 +37,11 @@ class ProcessorCH:
             name = prop["label"]
             stype = prop["type"]
             # only use the automatic weather stations
+            inProj = Proj('epsg:21781')
+            outProj = Proj('epsg:4326')
             if "AMS" in stype:
-                stations.append(Station(sid,name,coord[0],coord[1],coord[2],Region.Schweiz))
+                x,y = transform(inProj,outProj,coord[0],coord[1])
+                stations.append(Station(sid,name,y,x,coord[2],Region.Schweiz))
         return stations
 
     def get_data_for(self, station):
