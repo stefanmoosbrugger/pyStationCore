@@ -12,6 +12,7 @@ class Station:
 
     def meta_as_dict(self):
         d = {
+            "internalid": str(self.id),
             "name": str(self.name),
             "latitude": str(self.lat),
             "longitude": str(self.long),
