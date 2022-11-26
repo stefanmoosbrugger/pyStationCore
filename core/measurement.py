@@ -30,27 +30,27 @@ class Measurement:
         if self.timestamp:
             d["timestamp"] = int(self.timestamp)
         if self.hs:
-            d["hs"] = self.hs
+            d["hs"] = round(float(self.hs),2)
         if self.hs24h:
-            d["hs24h"] = self.hs24h
+            d["hs24h"] = round(float(self.hs24h),2)
         if self.ta:
-            d["ta"] = self.ta
+            d["ta"] = round(float(self.ta),2)
         if self.tss:
-            d["tss"] = self.tss
+            d["tss"] = round(float(self.tss),2)
         if self.td:
-            d["td"] = self.td
+            d["td"] = round(float(self.td),2)
         if self.vw:
-            d["vw"] = self.vw
+            d["vw"] = int(self.vw)
         if self.vwmax:
-            d["vwmax"] = self.vwmax
+            d["vwmax"] = int(self.vwmax)
         if self.dw:
-            d["dw"] = self.dw
+            d["dw"] = int(self.dw)
         if self.igr:
-            d["igr"] = self.igr
+            d["igr"] = int(self.igr)
         if self.ogr:
-            d["ogr"] = self.ogr
+            d["ogr"] = int(self.ogr)
         if self.rh:
-            d["rh"] = self.rh
+            d["rh"] = round(float(self.rh),2)
         return d
 
     def __str__(self):
