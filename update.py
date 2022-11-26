@@ -9,7 +9,7 @@ import sys
 
 c = Connection.get_connection(ConnectionType.Default)
 d = Database.get_database(DatabaseType.MongoDb)
-d.open("51.68.5.233","27017","stationdb","dbuser","210589")
+d.open("## IP ##","## PORT ##","## DB ##","## USER ##","## PWD ##")
 
 def main(argv):
     if(len(sys.argv)!=2):
