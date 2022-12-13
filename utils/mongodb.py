@@ -44,7 +44,7 @@ class MongoDbClient:
         dbmlist = [dict(sorted(i.items())) for i in dbmlist]
         mlist = [dict(sorted(i.items())) for i in mlist]
         mlist = [i for i in mlist if i not in dbmlist]
-        # only keep the entried that require an update/insert
+        # only keep the entries that require an update/insert
         print("\twrite: "+str(len(mlist)))
         for m in mlist:
             m["stationId"] = dbObj["_id"]
