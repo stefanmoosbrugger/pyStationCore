@@ -21,17 +21,14 @@ class InfluxDbClient:
         data = []
         tags = stationMeta
         for m in mlist:
-            for key,val in m.items(): 
-                if key=="timestamp":
-                    # skip timestamp dict value as it is not a measurement
-                    continue
-                # write each measurement into the database.
-                data.append({
-                    "measurement": key,
-                    "tags": tags,
-                    "fields": { "value": val },
-                    "time": m["timestamp"]
-                })
+            entry = {
+                "measurement": "meteo",
+                "tags": tags,
+                "fields": m,
+                "time": m["timestamp"]
+            }
+            del entry["fields"]["timestamp"]
+            data.append(entry)
         for sp in [data[i * self.batch:(i + 1) * self.batch] for i in range((len(data) + self.batch - 1) // self.batch )]:
             for i in range(self.tries):
                 try:
