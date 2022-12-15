@@ -5,3 +5,4 @@ class Region(enum.Enum):
     Tirol = 2
     Vorarlberg = 3
     Bayern = 4
+    Suedtirol = 5

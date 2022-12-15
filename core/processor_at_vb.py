@@ -10,9 +10,6 @@ from common.region import *
 from core.station import *
 from core.measurement import *
 
-def flatten(t):
-    return [item for sublist in t for item in sublist]
-
 class ProcessorVB:
 
     def __init__(self,conn):
