@@ -66,7 +66,7 @@ class ProcessorTI:
                 # get timestamp
                 if prop.get("date") is None:
                     return # if there is not date value return (non automatic measurement)
-                unixepochts = time.mktime(datetime.datetime.fromisoformat(prop.get("date")).timetuple())
+                unixepochts = time.mktime(datetime.datetime.fromisoformat(prop.get("date")).replace(tzinfo=None).timetuple())
                 me.timestamp = unixepochts
                 # get incoming global radiation param
                 me.igr = prop.get("GS_O")
