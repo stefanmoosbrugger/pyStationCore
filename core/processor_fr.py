@@ -74,17 +74,18 @@ class ProcessorFR:
         vals = decoded_response.get("measures")
 
         me.timestamp = ts
+        get_val = lambda i: vals.get(i)[0] if not vals.get(i) is None and len(vals.get(i)) else None
         # get snow height
-        me.hs = vals.get("snow_height_seg1_nc")
+        me.hs = get_val("snow_height_seg1_nc")
         # get air temp
-        me.ta = vals.get("air_temperature_mean_nc")
+        me.ta = get_val("air_temperature_mean_nc")
         # get surface temp
-        me.tss = vals.get("ground_temperature_mean_nc")
+        me.tss = get_val("ground_temperature_mean_nc")
         # get windspeed
-        me.vw = vals.get("wind_speed_mean_young")
+        me.vw = get_val("wind_speed_mean_young")
         # get wind gust speed
-        me.vwmax = vals.get("wind_speed_maxi_young")
+        me.vwmax = get_val("wind_speed_maxi_young")
         # get wind direction
-        me.dw = vals.get("wind_direction_mini_young")
+        me.dw = get_val("wind_direction_mini_young")
         # append the measurement
         station.data.append(me)
