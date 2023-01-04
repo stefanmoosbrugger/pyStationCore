@@ -70,7 +70,11 @@ class ProcessorFR:
         if decoded_response.get("measures") is None:
             return 
         me = Measurement()
-        ts = datetime.datetime.fromisoformat(decoded_response.get("lastdata")).timestamp()
+        tsval = decoded_response.get("lastdata")
+        tsval.replace(" ","T")
+        tsval = tsval+"+01:00"
+        # stupid timevalue string modifications. 
+        ts = datetime.datetime.fromisoformat(tsval).timestamp()
         vals = decoded_response.get("measures")
 
         me.timestamp = ts
