@@ -6,3 +6,4 @@ class Region(enum.Enum):
     Vorarlberg = 3
     Bayern = 4
     Suedtirol = 5
+    Frankreich = 6
