@@ -9,56 +9,131 @@ class ProcessorCH:
 
     def __init__(self,conn):
         self.conn = conn
-        self.baseUri = "https://odb.slf.ch/api/v1/"
+        self.baseUri = "https://public-meas-data.slf.ch/public/station-data/"
+        self.params = ["HEIGHT_NEW_SNOW_1D","SNOW_HEIGHT","TEMPERATURE_AIR","TEMPERATURE_SNOW_SURFACE","WIND_MEAN"]
 
     def get_stations(self):
         # get stations of CH using the given conn
-        response = self.conn.request(str(self.baseUri+"/spatial"))
-        decoded_response = json.loads(response)
-        stations = []
-        for f in decoded_response["features"]:
-            # for each station entry fetch the relevant data
-            if not "geometry" in f or not "properties" in f:
-                continue
-            # get geometry and properties
-            geo = f["geometry"]
-            prop = f["properties"]
-            # in geo we're only interested in the coordinates.
-            # if not existant, continue
-            if not "coordinates" in geo:
-                continue
-            coord = geo["coordinates"]
-            # in prop we're interested in the id, label and type.
-            # if one is not existant, continue
-            if not "id" in prop or not "label" in prop or not "type" in prop:
-                continue
-            # fetch id, label and type
-            sid = prop["id"]
-            name = prop["label"]
-            stype = prop["type"]
-            # only use the automatic weather stations
-            inProj = Proj('epsg:21781')
-            outProj = Proj('epsg:4326')
-            if "AMS" in stype:
-                x,y = transform(inProj,outProj,coord[0],coord[1])
-                stations.append(Station(sid,name,y,x,coord[2],Region.Schweiz))
+        for p in self.params:
+            response = self.conn.request(str(self.baseUri+"timepoint/"+p+"/current/geojson"))
+            decoded_response = json.loads(response)
+            stations = []
+            for f in decoded_response["features"]:
+                # for each station entry fetch the relevant data
+                if not "geometry" in f or not "properties" in f:
+                    continue
+                # get geometry and properties
+                geo = f["geometry"]
+                prop = f["properties"]
+                # in geo we're only interested in the coordinates.
+                # if not existant, continue
+                if not "coordinates" in geo:
+                    continue
+                coord = geo["coordinates"]
+                # in prop we're interested in the id, label and type.
+                # if one is not existant, continue
+                if not "code" in prop or not "label" in prop:
+                    continue
+                # fetch id, label and type
+                sid = prop["code"]
+                name = prop["label"]
+                network = prop["network"]
+                # only use the automatic weather stations
+                news = Station(sid,name,coord[0],coord[1],coord[2],Region.Schweiz)
+                insert = True
+                for s in stations:
+                    if s.id==sid:
+                        insert = False
+                if insert:
+                    stations.append(news)
         return stations
 
     def get_data_for(self, station):
         # get data for a specific station of that region and store the time series
         # as a list of measurements objects in the station object.
-        response = self.conn.request(str(self.baseUri+"/measurement?id="+station.id))
+        network = "IMIS"
+        if station.id.startswith("*"):
+            network = "SMN"
+        response = self.conn.request(str(self.baseUri+"timeseries/week/current/"+network+"/"+station.id))
         decoded_response = json.loads(response)
+        timestamps = {}
         for m in decoded_response:
-            spm = m.split(";")
-            conv = lambda i : i or None
-            me = Measurement()
-            me.timestamp = conv(spm[0])
-            me.hs = conv(spm[1])
-            me.hs24h = conv(spm[2])
-            me.ta = conv(spm[3])
-            me.tss = conv(spm[4])
-            me.vw = conv(spm[5])
-            me.vwmax = conv(spm[6])
-            me.dw = conv(spm[7])
-            station.data.append(me)
+            if "windVelocityMean" in m:
+                for val in decoded_response["windVelocityMean"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].vw = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.vw = val["value"]
+                            timestamps[ts] = me
+            if "temperatureAir" in m:
+                for val in decoded_response["temperatureAir"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].ta = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.ta = val["value"]
+                            timestamps[ts] = me
+            if "windVelocityMax" in m:
+                for val in decoded_response["windVelocityMax"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].vwmax = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.vwmax = val["value"]
+                            timestamps[ts] = me
+            if "windDirectionMean" in m:
+                for val in decoded_response["windDirectionMean"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].dw = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.dw = val["value"]
+                            timestamps[ts] = me
+            if "snowHeight" in m:
+                for val in decoded_response["snowHeight"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].hs = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.hs = val["value"]
+                            timestamps[ts] = me
+            if "temperatureSnowSurface" in m:
+                for val in decoded_response["temperatureSnowSurface"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].tss = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.tss = val["value"]
+                            timestamps[ts] = me
+            if "heightNewSnow" in m:
+                for val in decoded_response["heightNewSnow"]:
+                    if "timestamp" in val and "value" in val:
+                        ts = val["timestamp"]
+                        if ts in timestamps:
+                            timestamps[ts].hs24h = val["value"]
+                        else:
+                            me = Measurement()
+                            me.timestamp = ts
+                            me.hs24h = val["value"]
+                            timestamps[ts] = me
+        for ts in timestamps:
+            station.data.append(timestamps[ts])

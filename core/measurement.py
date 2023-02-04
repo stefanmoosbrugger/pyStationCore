@@ -27,54 +27,54 @@ class Measurement:
 
     def measurement_as_dict(self):
         d = {}
-        if self.timestamp:
+        if not self.timestamp is None:
             d["timestamp"] = int(self.timestamp)
-        if self.hs:
+        if not self.hs is None:
             d["hs"] = round(float(self.hs),2)
-        if self.hs24h:
+        if not self.hs24h is None:
             d["hs24h"] = round(float(self.hs24h),2)
-        if self.ta:
+        if not self.ta is None:
             d["ta"] = round(float(self.ta),2)
-        if self.tss:
+        if not self.tss is None:
             d["tss"] = round(float(self.tss),2)
-        if self.td:
+        if not self.td is None:
             d["td"] = round(float(self.td),2)
-        if self.vw:
+        if not self.vw is None:
             d["vw"] = int(self.vw)
-        if self.vwmax:
+        if not self.vwmax is None:
             d["vwmax"] = int(self.vwmax)
-        if self.dw:
+        if not self.dw is None:
             d["dw"] = int(self.dw)
-        if self.igr:
+        if not self.igr is None:
             d["igr"] = int(self.igr)
-        if self.ogr:
+        if not self.ogr is None:
             d["ogr"] = int(self.ogr)
-        if self.rh:
+        if not self.rh is None:
             d["rh"] = round(float(self.rh),2)
         return d
 
     def __str__(self):
         retStr = " -> measurement@" + str(self.timestamp) + "\n"
-        if self.hs:
+        if not self.hs is None:
             retStr += "snow height: " + str(self.hs) + "cm \n"
-        if self.hs24h:
+        if not self.hs24h is None:
             retStr += "snow height difference 24h: " + str(self.hs24h) + "cm \n"
-        if self.ta:
+        if not self.ta is None:
             retStr += "air temperature: " + str(self.ta) + "°C \n"
-        if self.tss:
+        if not self.tss is None:
             retStr += "surface temperature: " + str(self.tss) + "°C \n"
-        if self.td:
+        if not self.td is None:
             retStr += "dew point temperature: " + str(self.td) + "°C \n"
-        if self.vw:
+        if not self.vw is None:
             retStr += "wind speed: " + str(self.vw) + "km/h \n"
-        if self.vwmax:
+        if not self.vwmax is None:
             retStr += "wind gust speed: " + str(self.vwmax) + "km/h \n"
-        if self.dw:
+        if not self.dw is None:
             retStr += "direction wind " + str(self.dw) + "° \n"
-        if self.igr:
+        if not self.igr is None:
             retStr += "incoming radiation: " + str(self.igr) + "W/m2 \n"
-        if self.ogr:
+        if not self.ogr is None:
             retStr += "outgoing radiation: " + str(self.ogr) + "W/m2 \n"
-        if self.rh:
+        if not self.rh is None:
             retStr += "relative humidity: " + str(self.rh) + "% \n"
         return retStr
