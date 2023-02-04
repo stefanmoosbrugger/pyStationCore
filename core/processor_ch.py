@@ -1,4 +1,6 @@
 import json
+import time
+import datetime
 from pyproj import Proj,transform
 from utils.connection import *
 from common.region import *
@@ -136,4 +138,7 @@ class ProcessorCH:
                             me.hs24h = val["value"]
                             timestamps[ts] = me
         for ts in timestamps:
+            oldts = timestamps[ts].timestamp
+            unixepochts = time.mktime(datetime.datetime.strptime(oldts, "%Y-%m-%dT%H:%M:%S%z").timetuple())
+            timestamps[ts].timestamp = unixepochts
             station.data.append(timestamps[ts])
