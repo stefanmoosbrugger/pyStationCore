@@ -4,6 +4,7 @@ from core.processor_fr import *
 from core.processor_de_by import *
 from core.processor_at_ti import *
 from core.processor_at_vb import *
+from core.processor_at_sb import *
 from core.processor_it_st import *
 
 class Processor:
@@ -20,3 +21,5 @@ class Processor:
          return ProcessorSTI(conn)
       if(region is Region.Frankreich):
          return ProcessorFR(conn)
+      if(region is Region.Salzburg):
+         return ProcessorSBG(conn)

@@ -7,3 +7,4 @@ class Region(enum.Enum):
     Bayern = 4
     Suedtirol = 5
     Frankreich = 6
+    Salzburg = 7
