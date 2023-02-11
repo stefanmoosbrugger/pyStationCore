@@ -62,7 +62,7 @@ class ProcessorSBG:
                 if namedParam in paramName:
                     # it is a named parameter, replace it and see what is left
                     strippedParam = paramName.replace(namedParam,"").strip()
-                    if station.name in strippedParam:
+                    if strippedParam.endswith(station.name):
                         # the given station name matches the named param remainings.
                         # this means we record this and maybe the following params.
                         record = True
