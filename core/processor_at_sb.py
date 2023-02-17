@@ -23,7 +23,9 @@ class ProcessorSBG:
         stations = []
         for region in decoded_response:
             for station in decoded_response[region]:
-                # get station data 
+                # get station data
+                if not "longitude" in station or not "latitude" in station or not "altitude" in station:
+                    continue
                 longi = str(station["longitude"])
                 lati = str(station["latitude"])
                 alti = float(str(station["altitude"]))
@@ -34,6 +36,15 @@ class ProcessorSBG:
                     for stn in station["title"].split("–"):
                         substationname = stn[:stn.rfind(" (")].strip()
                         # remove height indication as it is given in the coords 
+                        if i>0:
+                            for coord in station["geometry"]["coordinates"]:
+                                if len(coord)>1 and str(int(coord[2])) in stn:
+                                    longi = str(coord[0])
+                                    lati = str(coord[1])
+                                    alti = float(str(coord[2]))
+                        # if additional station coordinates are given. find the 
+                        # right ones (according to what is given as height and
+                        # replace if possible
                         sid = "sb-"+str(station["name"])+"-"+str(station["id"])+"-"+str(i)
                         i = i+1
                         stations.append(Station(sid,substationname,longi,lati,alti,Region.Salzburg))
