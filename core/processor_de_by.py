@@ -21,18 +21,34 @@ class ProcessorBY:
    
     def get_stations(self):
         response = self.conn.request(str(self.baseUri))
-        finder = re.findall(r'var points = [^;]*',response,flags=re.DOTALL)
-        points = finder[0].split("var points = ")[1]
+        pointsfinder = re.findall(r'var points = [^;]*',response,flags=re.DOTALL)
+        contentsfinder = re.findall(r'var contents = \[.*\];',response,flags=re.DOTALL)
+        points = pointsfinder[0].split("var points = ")[1]
+        contents = contentsfinder[0].split("var contents = ")[1]
         pstr = "".join(points.split())[:-3][2:]
         pstr = pstr.replace("'",'"')
         points = json.loads(str("[["+pstr+"]]"))
         stations = []
         for station in points:
            name = station[0]
+           # dirty way to extract altitude data from javascript array
+           # named "contents". seems to be static content as it did not 
+           # change since january 2022. 
+           pos = contents.find(name)
+           alti = 0
+           if pos > -1:
+              pos = pos+len(name)+9 # name</span>, 
+              if contents[pos:pos+4].isdigit():
+                alti = contents[pos:pos+4]
            lat = station[1]
            longi = station[2]
            sid = station[4]
-           stations.append(Station(sid,name,longi,lat,0,Region.Bayern))
+           # the station sensors are sometimes located in different places
+           # (e.g., wind and snow data). unfortunately this is not reflected
+           # in the location data provided in points. therefore we use the
+           # first altitude data that is given (e.g., Herzogstand 1575/1625m is
+           # assumed to be located ar 1575m).
+           stations.append(Station(sid,name,longi,lat,alti,Region.Bayern))
         return stations; 
 
     def get_data_for(self,station):
