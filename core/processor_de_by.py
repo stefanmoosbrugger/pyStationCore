@@ -20,7 +20,7 @@ class ProcessorBY:
         self.baseUri = "https://www.lawinenwarndienst-bayern.de/res/daten_meldungen/messdaten/"
    
     def get_stations(self):
-        response = self.conn.request(str(self.baseUri))
+        response = self.conn.get_request(str(self.baseUri))
         pointsfinder = re.findall(r'var points = [^;]*',response,flags=re.DOTALL)
         contentsfinder = re.findall(r'var contents = \[.*\];',response,flags=re.DOTALL)
         points = pointsfinder[0].split("var points = ")[1]
@@ -55,7 +55,7 @@ class ProcessorBY:
         if not station.region is Region.Bayern:
             warnings.warn("Cannot use given processor (Bayern) for station in region "+str(station.region))
             return
-        response = self.conn.request(str(self.baseUri+"messstation.php?rid="+station.id))
+        response = self.conn.get_request(str(self.baseUri+"messstation.php?rid="+station.id))
         # find the timesteps used in the diagrams and convert to unix epoch time
         timearr = re.findall(r'zeitarr\[.+?(?=;)',response,flags=re.DOTALL)
         timesteps = []

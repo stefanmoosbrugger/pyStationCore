@@ -17,7 +17,7 @@ class ProcessorCH:
     def get_stations(self):
         # get stations of CH using the given conn
         for p in self.params:
-            response = self.conn.request(str(self.baseUri+"timepoint/"+p+"/current/geojson"))
+            response = self.conn.get_request(str(self.baseUri+"timepoint/"+p+"/current/geojson"))
             decoded_response = json.loads(response)
             stations = []
             for f in decoded_response["features"]:
@@ -56,7 +56,7 @@ class ProcessorCH:
         network = "IMIS"
         if station.id.startswith("*"):
             network = "SMN"
-        response = self.conn.request(str(self.baseUri+"timeseries/week/current/"+network+"/"+station.id))
+        response = self.conn.get_request(str(self.baseUri+"timeseries/week/current/"+network+"/"+station.id))
         decoded_response = json.loads(response)
         timestamps = {}
         for m in decoded_response:

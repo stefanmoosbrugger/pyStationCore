@@ -8,3 +8,4 @@ class Region(enum.Enum):
     Suedtirol = 5
     Frankreich = 6
     Salzburg = 7
+    Aosta = 8

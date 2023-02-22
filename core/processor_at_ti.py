@@ -18,7 +18,7 @@ class ProcessorTI:
         # tirol only requires a single request. all 
         # the data is contained in the response.
         # in order to renew the response retrieve_data can be called.
-        self.response = self.conn.request(str(self.baseUri))
+        self.response = self.conn.get_request(str(self.baseUri))
 
     def get_stations(self):
         # get stations of Tirol using the given conn

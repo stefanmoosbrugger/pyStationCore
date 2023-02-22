@@ -17,7 +17,7 @@ class ProcessorVB:
         self.baseUri = "https://lawis.at/lawis_api/v2_2/station/"
    
     def get_stations(self):
-        response = self.conn.request(str(self.baseUri)+"?_=0")
+        response = self.conn.get_request(str(self.baseUri)+"?_=0")
         decoded_response = json.loads(response)
         stations = []
         for f in decoded_response: 
@@ -45,7 +45,7 @@ class ProcessorVB:
         # get station specific uri
         sid = station.id[3:]
         uri = str(self.baseUri)+str(sid)+"?_=0"
-        response = self.conn.request(uri)
+        response = self.conn.get_request(uri)
         decoded_response = json.loads(response)
         alldata = []
         if "charts" in decoded_response:
@@ -55,7 +55,7 @@ class ProcessorVB:
                 if "link" in singleday:
                     # fetch data from chart viewer
                     link = singleday["link"]
-                    response = self.conn.request(link)
+                    response = self.conn.get_request(link)
                     soup = BeautifulSoup(response, 'html.parser')
                     alldata = soup.findAll('circle',attrs={'class': 'tip'})
         measurements = {}

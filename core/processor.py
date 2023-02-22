@@ -6,6 +6,7 @@ from core.processor_at_ti import *
 from core.processor_at_vb import *
 from core.processor_at_sb import *
 from core.processor_it_st import *
+from core.processor_it_ao import *
 
 class Processor:
    def get_processor(region,conn):
@@ -23,3 +24,5 @@ class Processor:
          return ProcessorFR(conn)
       if(region is Region.Salzburg):
          return ProcessorSBG(conn)
+      if(region is Region.Aosta):
+         return ProcessorAOS(conn)

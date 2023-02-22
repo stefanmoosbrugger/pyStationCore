@@ -17,7 +17,7 @@ class ProcessorFR:
         self.baseUri = "http://iav-portal.com/index.php?"
 
     def get_stations(self):
-        response = self.conn.request(str(self.baseUri)+"nav=data_meteo_stations&lang=en")
+        response = self.conn.get_request(str(self.baseUri)+"nav=data_meteo_stations&lang=en")
         soup = BeautifulSoup(response, 'html.parser')
         alldata = soup.findAll('tr')
         station_codes = []
@@ -33,7 +33,7 @@ class ProcessorFR:
             station_codes.append(tds[0].get_text())
         stations = []
         for c in station_codes:
-            resp = self.conn.request(str(self.baseUri)+"nav=data_meteo_station&lang=en&code="+str(c))
+            resp = self.conn.get_request(str(self.baseUri)+"nav=data_meteo_station&lang=en&code="+str(c))
             stationd = BeautifulSoup(resp, 'html.parser')
             data = stationd.findAll('td',{'valign':'top','align':'left','colspan':'2'})[0]
             trs = data.findChildren('tr')
@@ -63,7 +63,7 @@ class ProcessorFR:
         # get station specific uri
         sid = station.id[3:]
         uri = "http://www.iav-portal.com/isaw/idod/idod.php?s="+str(sid)+"&f=json&d=1"
-        response = self.conn.request(uri)
+        response = self.conn.get_request(uri)
         decoded_response = json.loads(response)
         if decoded_response is None or decoded_response.get("lastdata") is None:
             return 

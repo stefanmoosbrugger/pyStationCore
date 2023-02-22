@@ -18,7 +18,7 @@ class ProcessorSBG:
     def get_stations(self):
         # get stations of Tirol using the given conn
         uri = str(self.baseUri)+str("Station.js")
-        response = self.conn.request(uri)[14:]
+        response = self.conn.get_request(uri)[14:]
         decoded_response = json.loads(response)
         stations = []
         for region in decoded_response:
@@ -59,7 +59,7 @@ class ProcessorSBG:
             return
         name = station.id.split("-")[1]
         uri = str(self.baseUri)+str("grafiken/800/standard/7/"+name+str(".json"))
-        response = self.conn.request(uri)
+        response = self.conn.get_request(uri)
         decoded_response = json.loads(response)
         if not "data" in decoded_response:
             return
