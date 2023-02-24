@@ -11,7 +11,7 @@ class ProcessorTI:
 
     def __init__(self,conn):
         self.conn = conn
-        self.baseUri = "https://wiski.tirol.gv.at/lawine/produkte/ogd.geojson"
+        self.baseUri = "https://static.avalanche.report/weather_stations/stations.geojson"
         self.response = None
 
     def retrieve_data(self):
@@ -43,17 +43,25 @@ class ProcessorTI:
             if not "name" in prop:
                 continue
             # fetch id, name and
+            regi = Region.Tirol
+            if not "LWD-Region" in prop or not "AT-07" in prop["LWD-Region"]:
+                if not "Warth" in prop["name"]:
+                    continue
+                else:
+                    regi = Region.Vorarlberg
+            # skip non tirol stations (except Warth. this is bad hack and 
+            # we should get rid of that.)
             sid = f["id"]
             name = prop["name"]
             # only use the automatic weather stations
-            stations.append(Station(sid,name,coord[0],coord[1],coord[2],Region.Tirol))
+            stations.append(Station(sid,name,coord[0],coord[1],coord[2],regi))
         return stations
 
     def get_data_for(self, station):
         # get data for a specific station of that region and store the time series
         # as a list of measurements objects in the station object.
         # get stations of Tirol using the given conn
-        if not station.region is Region.Tirol:
+        if not station.region is Region.Tirol and not "Warth" in station.name:
             warnings.warn("Cannot use given processor (Tirol) for station in region "+str(station.region))
             return
         if self.response is None:
