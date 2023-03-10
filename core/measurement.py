@@ -53,6 +53,9 @@ class Measurement:
             d["rh"] = round(float(self.rh),2)
         return d
 
+    def empty(self):
+        return len(self.measurement_as_dict())<=1
+
     def __str__(self):
         retStr = " -> measurement@" + str(self.timestamp) + "\n"
         if not self.hs is None:

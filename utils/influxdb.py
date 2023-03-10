@@ -30,6 +30,9 @@ class InfluxDbClient:
         data = []
         tags = stationMeta
         for m in mlist:
+            if len(m)<=1:
+                # skip empty measurements
+                continue
             entry = {
                 "measurement": "meteo",
                 "tags": tags,

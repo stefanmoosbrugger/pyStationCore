@@ -24,7 +24,7 @@ def checkForNewSnow(station,timestamp):
    endLevel = 0
    hasHs = False
    if len(station.data)==0:
-      return Event(timestamp,"new_snow",endLevel)
+      return Event(timestamp,"new_snow",-1)
    station.data.sort(key=lambda x: x.timestamp)
    if (station.data[-1].timestamp-station.data[0].timestamp)<=86400:
       if not station.data[-1].hs is None and not station.data[0].hs is None:
