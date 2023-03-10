@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime
+import calendar
 import time
 import json
 import sys
@@ -15,7 +16,7 @@ class InfluxDbClient:
         self.tok = tok
         self.org = org
         self.bucket = bucket
-        self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.tok, org=self.org)
+        self.client = influxdb_client.InfluxDBClient(url=self.url, token=self.tok, org=self.org, timeout=30_000)
         self.write_api = self.client.write_api(write_options=influxdb_client.client.write_api.SYNCHRONOUS)
         self.query_api = self.client.query_api()
         self.batch = batchsize # defaults to 500. use smaller/larger values if required
@@ -49,8 +50,71 @@ class InfluxDbClient:
                         raise
                 break
 
+    def write_station_metadata(self,station):
+        if len(station.data)==0:
+            return
+        station.data.sort(key=lambda x: x.timestamp)
+        lastSeenTs = station.data[-1].timestamp
+        data = []
+        tags = station.meta_as_dict()
+        entry = {
+            "measurement": "station",
+            "tags": tags,
+            "fields": {
+                "lastSeen": int(lastSeenTs)
+            },
+            "time": 0
+        }
+        self.write_api.write(bucket=self.bucket, org=self.org, record=entry, write_precision='s')
+
+    def fill_measurement(self,me,paramName,val):
+        if val is None:
+            return
+        if "hs" == paramName:
+            me.hs = val
+        if "ta" == paramName:
+            me.ta = val
+        if "td" == paramName:
+            me.td = val
+        if "tss" == paramName:
+            me.tss = val
+        if "rh" == paramName:
+            me.rh = val
+        if "vw" == paramName:
+            me.vw = val
+        if "vwmax" == paramName:
+            me.vwmax = val
+        if "dw" == paramName:
+            me.dw = val
+        if "ogr" == paramName:
+            me.ogr = val
+        if "igr" == paramName:
+            me.igr = val
+
+    def get_station_data_latest(self,station):
+        query = 'from(bucket: "'+self.bucket+'")\
+            |> range(start: 0)\
+            |> filter(fn: (r) => r.internalid == "'+station.id+'")\
+            |> last()\
+            |> map(fn: (r) => ({r with _value: (float(v: r._value))} ))\
+            |> group()\
+            |> sort(columns: ["_time"], desc:true) \
+            |> first()\
+            |> yield()'
+        result = self.query_api.query(org=self.org, query=query)
+        jsonres = json.loads(result.to_json())
+        for result in jsonres:
+            tt = pd.to_datetime(result["_time"],utc=True).timetuple()
+            ts = calendar.timegm(tt)
+            me = Measurement()
+            me.timestamp = ts
+            paramName = result["_field"]
+            val = result["_value"]
+            self.fill_measurement(me,paramName,val)
+            station.data.append(me)
+
     def get_station_data(self,station,fromTs,toTs,aggregateWindow="30m",aggregateFunction="mean"):
-        query = 'from(bucket: "stationdb")\
+        query = 'from(bucket: "'+self.bucket+'")\
             |> range(start: '+str(fromTs)+', stop: '+str(toTs)+')\
             |> filter(fn: (r) => r.internalid == "'+station.id+'")\
             |> map(fn: (r) => ({\
@@ -64,7 +128,8 @@ class InfluxDbClient:
         result = self.query_api.query(org=self.org, query=query)
         jsonres = json.loads(result.to_json())
         for result in jsonres:
-            ts = time.mktime(pd.to_datetime(result["_time"]).timetuple())
+            tt = pd.to_datetime(result["_time"],utc=True).timetuple()
+            ts = calendar.timegm(tt)
             me = 0
             i = 0
             append = False
@@ -79,35 +144,14 @@ class InfluxDbClient:
             me.timestamp = ts
             paramName = result["_measurement"]
             val = result["_value"]
-            if val is None:
-                continue
-            if "hs" == paramName:
-                me.hs = val
-            if "ta" == paramName:
-                me.ta = val
-            if "td" == paramName:
-                me.td = val
-            if "tss" == paramName:
-                me.tss = val
-            if "rh" == paramName:
-                me.rh = val
-            if "vw" == paramName:
-                me.vw = val
-            if "vwmax" == paramName:
-                me.vwmax = val
-            if "dw" == paramName:
-                me.dw = val
-            if "ogr" == paramName:
-                me.ogr = val
-            if "igr" == paramName:
-                me.igr = val
+            self.fill_measurement(me,paramName,val)
             if append:
                 station.data.append(me)
             else:
                 station.data[i] = me
 
     def get_all_stations(self,fromTs,toTs):
-        query = 'from(bucket: "stationdb")\
+        query = 'from(bucket: "'+self.bucket+'")\
             |> range(start: '+fromTs+', stop: '+toTs+')\
             |> keep(columns: ["_time", "internalid", "name", "region", "altitude", "longitude", "latitude"])\
             |> group(columns: ["internalid"])\
