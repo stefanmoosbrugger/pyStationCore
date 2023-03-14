@@ -1,4 +1,4 @@
-from analyzer.event import *
+from analyzer.events.event import *
 
 def checkForColdTemp(station,timestamp):
    # check if given station data contains a cold temp pattern.
@@ -29,11 +29,14 @@ def checkForColdTemp(station,timestamp):
             endLevel[1] += 1
          if val<=-20:
             endLevel[2] += 1
-   threshold = datapoints/3
-   if endLevel[0]>=threshold:
-      level = 1
-   if endLevel[1]>=threshold:
-      level = 2
-   if endLevel[2]>=threshold:
-      level = 3
+   if datapoints>0:
+      # only compute temp indicator if ta exists
+      threshold = datapoints/3
+      if endLevel[0]>=threshold:
+         level = 1
+      if endLevel[1]>=threshold:
+         level = 2
+      if endLevel[2]>=threshold:
+         level = 3
    return Event(timestamp,"cold_temp",level)
+
