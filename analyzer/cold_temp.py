@@ -1,4 +1,4 @@
-from analyzer.events.event import *
+from analyzer.event import *
 
 def checkForColdTemp(station,timestamp):
    # check if given station data contains a cold temp pattern.
