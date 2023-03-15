@@ -94,10 +94,13 @@ class InfluxDbClient:
         if "igr" == paramName:
             me.igr = val
 
-    def get_station_data_latest(self,station):
+    def get_station_data_latest(self,station,fromTs,toTs,field=None):
+        field_str = ""
+        if field:
+            field_str = ' and r._field=="'+str(field)+'"'
         query = 'from(bucket: "'+self.bucket+'")\
-            |> range(start: 0)\
-            |> filter(fn: (r) => r.internalid == "'+station.id+'")\
+            |> range(start: '+str(fromTs)+', stop: '+str(toTs)+')\
+            |> filter(fn: (r) => r.internalid == "'+station.id+'"'+field_str+')\
             |> last()\
             |> map(fn: (r) => ({r with _value: (float(v: r._value))} ))\
             |> group()\
