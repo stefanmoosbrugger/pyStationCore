@@ -1,3 +1,4 @@
+from core.measurement import * 
 
 class Station:
     # ctor 
@@ -20,6 +21,15 @@ class Station:
             "region": str(self.region)
         }
         return d
+
+    def get_measurement(self,ts):
+        for d in self.data:
+            if d.timestamp==ts:
+                return d
+        m = Measurement()
+        m.timestamp = ts
+        self.data.append(m)
+        return m
 
     def measurements_as_list(self):
         l = []
