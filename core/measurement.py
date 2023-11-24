@@ -81,3 +81,6 @@ class Measurement:
         if not self.rh is None:
             retStr += "relative humidity: " + str(self.rh) + "% \n"
         return retStr
+
+    def __lt__(self, other):
+        return self.timestamp < other.timestamp
