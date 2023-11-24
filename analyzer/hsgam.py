@@ -43,14 +43,10 @@ class HsGam:
       self.XX = self.gam.generate_X_grid(term=0)
       self.y = self.gam.predict(self.XX)
 
-   def return_hs_dict(self):
+   def return_hs_dict(self,res,reg):
       # return a dict that represents predicted snow heights for 
       # the given interval and stepsize.
-      res = {}
-      res["data"] = []
+      res["data"][reg] = {}
+      res["data"][reg]["model"] = []
       for i in range(0,len(self.XX)):
-         dataval = {
-            "alt":round(float(self.XX[i][0]),0),
-            "hs":round(float(max(0,self.y[i])),0) }
-         res["data"].append(dataval)
-      return res
+         res["data"][reg]["model"].append({"alt":round(float(self.XX[i][0]),0),"hs":round(float(max(0,self.y[i])),0)})
