@@ -7,6 +7,8 @@ from core.processor_at_vb import *
 from core.processor_at_sb import *
 from core.processor_it_st import *
 from core.processor_it_ao import *
+from core.processor_at_zamg_hist import *
+from core.processor_at_zamg_tawes import *
 
 class Processor:
    def get_processor(region,conn):

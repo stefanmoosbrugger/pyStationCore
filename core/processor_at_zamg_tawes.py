@@ -10,12 +10,12 @@ from common.region import *
 from core.station import *
 from core.measurement import *
 
-class ProcessorZAMG:
+class ProcessorCurrentZAMG:
 
     def __init__(self,conn,subregion):
         self.conn = conn
         self.subreg = subregion
-        self.baseUri = "https://dataset.api.hub.geosphere.at/v1/station/historical/klima-v1-10min"
+        self.baseUri = "https://dataset.api.hub.geosphere.at/v1/station/current/tawes-v1-10min"
 
     def get_name_for_region(self):
       if self.subreg == Region.Vorarlberg:
@@ -43,10 +43,11 @@ class ProcessorZAMG:
             warnings.warn("Cannot use given processor ("+self.get_name_for_region()+") for station in region "+str(station.region))
             return
         sid = station.id[5:]
+        currdate = datetime.datetime.now().strftime("%Y-%m-%d")
+        prevdate = (datetime.datetime.now()-datetime.timedelta(days=2)).strftime("%Y-%m-%d")        
         uri = str(self.baseUri+"?parameters=DD&parameters=FFAM&parameters=FFX"+
-            "&parameters=GSX&parameters=HSX&parameters=RF"+
-            "&parameters=SH&parameters=TL&parameters=TP"+
-            "&start=2023-09-01T00:00&end=2024-09-01T00:00"+
+            "&parameters=GLOW&parameters=RFAM"+
+            "&parameters=SCHNEE&parameters=TL&parameters=TP"+
             "&station_ids="+str(sid)+
             "&output_format=geojson")
         response = self.conn.get_request(uri)
@@ -71,13 +72,11 @@ class ProcessorZAMG:
                     me.vw = float(val)*3.6
                 if "FFX" in param:
                 	me.vwmax = float(val)*3.6
-                if "GSX" in param:
+                if "GLOW" in param:
                 	me.igr = float(val)
-                if "HSX" in param:
-                	me.ogr = float(val)
-                if "RF" in param:
+                if "RFAM" in param:
                 	me.rh = float(val)
-                if "SH" in param:
+                if "SCHNEE" in param:
                 	me.hs = float(val)
                 if "TL" in param:
                 	me.ta = float(val)
