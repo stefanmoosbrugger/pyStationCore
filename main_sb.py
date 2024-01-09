@@ -1,3 +1,8 @@
+# This script fetches the latest values for the region listed below. The 
+# fetched data is pushed into the station database and the metadata database 
+# is updated (lastseen, etc.). This script is executed periodically to keep 
+# the data in the database up to date.
+
 import common.config as conf
 from common.connection import *
 from common.region import *

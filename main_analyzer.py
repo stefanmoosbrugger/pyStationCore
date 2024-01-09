@@ -1,3 +1,9 @@
+# This Python script queries weather station data from the Influx database. 
+# For each weather station, the data of the last day is analyzed to determine 
+# whether there were events of cold, fresh snow or strong winds. The identification 
+# of these events is based on predefined thresholds for temperature (cold), 
+# snowfall amount (fresh snow) and wind speed (strong wind). 
+# As soon as an event is detected, it is recorded in the event database.
 
 import common.config as conf
 from common.connection import *
