@@ -16,16 +16,44 @@ class ProcessorCurrentZAMG:
         self.conn = conn
         self.subreg = subregion
         self.baseUri = "https://dataset.api.hub.geosphere.at/v1/station/current/tawes-v1-10min"
+        self.stations = []
+        self.response = None
 
+    def retrieve_data(self):
+        # only make a single request. all 
+        # the data is contained in the response.
+        sids = ""
+        if len(self.stations):
+            sids = self.stations[0].id[5:]
+        for station in self.stations[1:]:
+            sids += ","
+            sids += station.id[5:]
+        uri = str(self.baseUri+"?parameters=DD&parameters=FFAM&parameters=FFX"+
+            "&parameters=GLOW&parameters=RFAM"+
+            "&parameters=SCHNEE&parameters=TL&parameters=TP"+
+            "&station_ids="+str(sids)+
+            "&output_format=geojson")        
+        self.response = json.loads(self.conn.get_request(uri))
+ 
     def get_name_for_region(self):
       if self.subreg == Region.Vorarlberg:
          return "Vorarlberg"
+      if self.subreg == Region.Tirol:
+         return "Tirol"
+      if self.subreg == Region.Salzburg:
+         return "Salzburg"
+      if self.subreg == Region.Steiermark:
+         return "Steiermark"
+      if self.subreg == Region.Kaernten:
+         return "Kärnten"
       return "None"
 
     def get_stations(self):
         response = self.conn.get_request(str(self.baseUri)+"/filter?state="+self.get_name_for_region())
         decoded_response = json.loads(response)
-        stations = []
+        self.stations = []
+        self.response = None
+
         if "matching_stations" in decoded_response:
             ms = decoded_response["matching_stations"]
             for f in ms:
@@ -35,23 +63,19 @@ class ProcessorCurrentZAMG:
                 alt = f["altitude"]
                 lat = f["lat"]
                 lon = f["lon"]
-                stations.append(Station(sid,name,lon,lat,alt,self.subreg))
-        return stations
+                self.stations.append(Station(sid,name,lon,lat,alt,self.subreg))
+        return self.stations
 
     def get_data_for(self,station):
         if self.get_name_for_region() == "None" or not station.region is self.subreg:
             warnings.warn("Cannot use given processor ("+self.get_name_for_region()+") for station in region "+str(station.region))
             return
+        if not self.response:
+            self.retrieve_data()
+        
+        decoded_response = self.response
         sid = station.id[5:]
-        currdate = datetime.datetime.now().strftime("%Y-%m-%d")
-        prevdate = (datetime.datetime.now()-datetime.timedelta(days=2)).strftime("%Y-%m-%d")        
-        uri = str(self.baseUri+"?parameters=DD&parameters=FFAM&parameters=FFX"+
-            "&parameters=GLOW&parameters=RFAM"+
-            "&parameters=SCHNEE&parameters=TL&parameters=TP"+
-            "&station_ids="+str(sid)+
-            "&output_format=geojson")
-        response = self.conn.get_request(uri)
-        decoded_response = json.loads(response)
+
         if not "features" in decoded_response:
             return
 
@@ -61,13 +85,22 @@ class ProcessorCurrentZAMG:
             epoch_timestamp = datetime_obj.replace(tzinfo=datetime.timezone.utc).timestamp()
             me = Measurement()
             me.timestamp = epoch_timestamp
-            feat = decoded_response["features"][0]
+            feat = None
+            for f in decoded_response["features"]:
+                if feat:
+                    continue
+                if not "properties" in f:
+                    continue
+                if not "station" in f["properties"]:
+                    continue
+                if f["properties"]["station"]==sid:
+                    feat = f
             for param in feat["properties"]["parameters"]:
                 val = feat["properties"]["parameters"][param]["data"][i]
                 if val == None:
                     continue
                 if "DD" in param:
-                    me.ta = float(val)
+                    me.dw = float(val)
                 if "FFAM" in param:
                     me.vw = float(val)*3.6
                 if "FFX" in param:

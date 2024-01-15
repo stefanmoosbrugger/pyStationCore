@@ -1,3 +1,5 @@
+import datetime
+
 class Measurement:
     # this class represents a measurement unit.
     # a measurement consists of the following entries:
@@ -57,7 +59,7 @@ class Measurement:
         return len(self.measurement_as_dict())<=1
 
     def __str__(self):
-        retStr = " -> measurement@" + str(self.timestamp) + "\n"
+        retStr = " -> measurement@" + str(self.timestamp) + " -> " + datetime.datetime.utcfromtimestamp(self.timestamp).strftime('%Y-%m-%d %H:%M:%S') + "\n"
         if not self.hs is None:
             retStr += "snow height: " + str(self.hs) + "cm \n"
         if not self.hs24h is None:

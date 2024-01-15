@@ -80,7 +80,8 @@ class ProcessorCH:
                 if "DW_30MIN_MEAN" in val and not None is val["DW_30MIN_MEAN"]:
                     me.dw = val["DW_30MIN_MEAN"]
                 # get measurements
-                station.data.append(me)
+                if not me.empty():
+                    station.data.append(me)
                 # append data
         if station.id in self.study_plots:
             for val in self.study_plots_data:
@@ -99,5 +100,6 @@ class ProcessorCH:
                 if "HN_1D" in val and not None is val["HN_1D"]:
                     me.hs24h = val["HN_1D"]
                 # get measurements
-                station.data.append(me)
+                if not me.empty():
+                    station.data.append(me)
                 # append data

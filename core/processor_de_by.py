@@ -76,7 +76,8 @@ class ProcessorBY:
             if "HS" in val and not None is val["HS"]:
                 me.hs = val["HS"]
             # get measurements
-            station.data.append(me)
+            if not me.empty():
+                station.data.append(me)
             # append data
 
 

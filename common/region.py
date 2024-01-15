@@ -9,3 +9,5 @@ class Region(enum.Enum):
     Frankreich = 6
     Salzburg = 7
     Aosta = 8
+    Kaernten = 9
+    Steiermark = 10

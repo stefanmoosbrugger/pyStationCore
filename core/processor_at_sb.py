@@ -125,5 +125,6 @@ class ProcessorSBG:
             # and attach the measurement to the station 
             me = measurements[ts]
             me.timestamp = me.timestamp[:-3] 
-            station.data.append(me)
+            if not me.empty():
+                station.data.append(me)
             

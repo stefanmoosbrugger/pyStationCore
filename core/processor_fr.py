@@ -92,4 +92,5 @@ class ProcessorFR:
         # get wind direction
         me.dw = get_val("wind_direction_mini_young")
         # append the measurement
-        station.data.append(me)
+        if not me.empty():
+            station.data.append(me)

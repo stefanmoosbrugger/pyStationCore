@@ -20,6 +20,14 @@ class ProcessorHistoricalZAMG:
     def get_name_for_region(self):
       if self.subreg == Region.Vorarlberg:
          return "Vorarlberg"
+      if self.subreg == Region.Tirol:
+         return "Tirol"
+      if self.subreg == Region.Salzburg:
+         return "Salzburg"
+      if self.subreg == Region.Steiermark:
+         return "Steiermark"
+      if self.subreg == Region.Kaernten:
+         return "Kärnten"
       return "None"
 
     def get_stations(self):
@@ -68,7 +76,7 @@ class ProcessorHistoricalZAMG:
                 if val == None:
                     continue
                 if "DD" in param:
-                    me.ta = float(val)
+                    me.dw = float(val)
                 if "FFAM" in param:
                     me.vw = float(val)*3.6
                 if "FFX" in param:

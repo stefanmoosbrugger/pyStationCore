@@ -98,5 +98,6 @@ class ProcessorVB:
             me.vwmax = get_val(m,"vwmax")
             me.dw = get_val(m,"dw")
             me.rh = get_val(m,"rh")
-            station.data.append(me)
+            if not me.empty():
+                station.data.append(me)
            

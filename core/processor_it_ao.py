@@ -143,4 +143,5 @@ class ProcessorAOS:
             # and attach the measurement to the station 
             me = measurements[ts]
             me.timestamp = str(me.timestamp)[:-5] 
-            station.data.append(me)
+            if not me.empty():
+                station.data.append(me)

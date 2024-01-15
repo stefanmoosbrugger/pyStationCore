@@ -94,6 +94,7 @@ class ProcessorSTI:
                 # get wind direction
                 me.dw = prop.get("WR")
                 # append the measurement
-                station.data.append(me)
+                if not me.empty():
+                    station.data.append(me)
                 
                 
